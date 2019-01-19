@@ -16,5 +16,7 @@
   (global-set-key (kbd "M-ˍ") 'ns-do-hide-others) ;; what describe-key reports for cmd-option-h
   )
 
+(setq w32-pass-apps-to-system nil)
+(setq w32-apps-modifier 'super) ; Menu/App key
 
 (provide 'init-osx-keys)

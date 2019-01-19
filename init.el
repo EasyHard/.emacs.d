@@ -49,8 +49,8 @@
 (require-package 'scratch)
 (require-package 'command-log-mode)
 
-(require 'init-frame-hooks)
-(require 'init-xterm)
+;;(require 'init-frame-hooks)
+;;(require 'init-xterm)
 (require 'init-themes)
 (require 'init-osx-keys)
 (require 'init-gui-frames)
@@ -58,8 +58,8 @@
 (require 'init-isearch)
 (require 'init-grep)
 (require 'init-uniquify)
-(require 'init-ibuffer)
-(require 'init-flycheck)
+;; (require 'init-ibuffer)
+;; (require 'init-flycheck)
 
 (require 'init-recentf)
 (require 'init-smex)
@@ -159,6 +159,47 @@
 (when (file-exists-p custom-file)
   (load custom-file))
 
+;; semantic setting
+(require 'semantic)
+
+(global-semanticdb-minor-mode 1)
+(global-semantic-idle-scheduler-mode 1800)
+(global-semantic-stickyfunc-mode 1)
+(setq semantic-symref-tool 'global)
+(semantic-mode 1)
+
+(defun alexott/cedet-hook ()
+  (local-set-key "\C-c\C-j" 'semantic-ia-fast-jump)
+  (local-set-key "\C-c\C-s" 'semantic-ia-show-summary))
+
+(add-hook 'c-mode-common-hook 'alexott/cedet-hook)
+(add-hook 'c-mode-hook 'alexott/cedet-hook)
+(add-hook 'c++-mode-hook 'alexott/cedet-hook)
+
+(package-install 'use-package)
+(require 'use-package)
+(setq use-package-always-ensure t)
+
+(add-to-list 'load-path "~/.emacs.d/custom")
+
+(require 'init-helm)
+(require 'init-helm-gtags)
+
+;; Package: dtrt-indent
+(use-package dtrt-indent
+  :init
+  (dtrt-indent-mode 1)
+  (setq dtrt-indent-verbosity 0))
+
+;; PACKAGE: comment-dwim-2
+(use-package comment-dwim-2
+  :bind (("M-;" . comment-dwim-2))
+  )
+
+;; Package: clean-aindent-mode
+(use-package clean-aindent-mode
+  :init
+  (add-hook 'prog-mode-hook 'clean-aindent-mode))
 
 ;;----------------------------------------------------------------------------
 ;; Locales (setting them earlier in this file doesn't work in X)
