@@ -120,10 +120,37 @@
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
 
+(defun zy/org-get-starttime-endtime (schedule-time-string)
+  (when schedule-time-string
+    (let ((start-time nil)
+          (end-time nil)
+          (sch-regexp "<\\(\\(\\([0-9]\\{4\\}\\)-\\([0-9]\\{2\\}\\)-\\([0-9]\\{2\\}\\) *\\([^]+0-9> -]*\\)\\) ?\\([0-9]\\{1,2\\}:[0-9]\\{2\\}\\)?\\)-\\([0-9:]+\\) ?[^>]*>"))
+      (if (string-match sch-regexp schedule-time-string)
+          (progn (setq start-time (match-string 1 schedule-time-string))
+                 (setq end-time (concat (match-string 2 schedule-time-string) " " (match-string 8 schedule-time-string)))
+                 (cons start-time end-time))
+        (cons nil nil)))))
+
+(defun zy/org-schedule-from-previous (diff-time)
+  (when (and org-last-inserted-timestamp diff-time)
+    (let ((schedule-time-end (cdr (zy/org-get-starttime-endtime org-last-inserted-timestamp))))
+      (when schedule-time-end
+        (org-schedule nil (concat schedule-time-end "+" diff-time))
+        org-last-inserted-timestamp))))
+
+(defun zy/org-schedule-from-previous-or-new (arg)
+  (interactive "sEmpty of time range after previous activity")
+  (let ((schedule-timestamp-from-previous (zy/org-schedule-from-previous arg)))
+    (or schedule-timestamp-from-previous
+        (progn (call-interactively 'org-schedule) org-last-inserted-timestamp))))
+
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
                "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+              ("s" "SchedActivity" entry
+               (file "C:/Users/zhiyliu/Dropbox/org/diary.org")
+               "* TODO %?                  :SchedActivity: \n SCHEDULED: %(call-interactively 'zy/org-schedule-from-previous-or-new)")
               ("r" "respond" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
               ("n" "note" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
@@ -1813,7 +1840,20 @@ Late deadlines first, then scheduled, then non-late deadlines"
           (when (member (nth 2 (org-heading-components)) (list "NEXT"))
             (org-todo "TODO")))))))
 
-(add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo 'append)
+
+(defun add-clock-as-scheduled ()
+  (let ((sch-time-string (org-entry-get (point) "SCHEDULED")))
+    (when (and (member "SchedActivity" (org-get-tags))
+               (equal "DONE" org-state)
+               sch-time-string)
+      (let* ((time-pair (zy/org-get-starttime-endtime sch-time-string))
+             (start-time (car time-pair))
+             (end-time (cdr time-pair)))
+        (org-clock-in nil (apply 'encode-time (org-parse-time-string start-time)))
+        (org-clock-out nil 't (apply 'encode-time (org-parse-time-string end-time)))))))
+
+(add-hook 'org-after-todo-state-change-hook 'bh/mark-next-parent-tasks-todo  'append)
+(add-hook 'org-after-todo-state-change-hook 'add-clock-as-scheduled  'append)
 (add-hook 'org-clock-in-hook 'bh/mark-next-parent-tasks-todo 'append)
 
 (setq org-startup-folded t)
