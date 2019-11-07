@@ -59,6 +59,7 @@
 (global-set-key (kbd "M-<f11>") 'org-clock-in)
 (global-set-key (kbd "C-s-<f12>") 'bh/save-then-publish)
 (global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "<f10>") 'org-capture)
 
 (defun bh/hide-other ()
   (interactive)
@@ -147,60 +148,67 @@
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
       (quote (("t" "todo" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
-               "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+               "* TODO %?\n%a\n" :clock-in t :clock-resume t)
+              ("w" "Templates for work.org captures")
+              ("wc" "CRI" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "CRI")
+               "* TODO %?%c\n\n" :clock-in t :clock-resume t)
+              ("wm" "Mics" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "Misc")
+               "* TODO %?\n%a\n" :clock-in t :clock-resume t)
+              ("w2" "Sev2" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "Sev2 Livesite")
+               "* TODO %?%c\n\n" :clock-in t :clock-resume t)
               ("s" "SchedActivity" entry
                (file "C:/Users/zhiyliu/Dropbox/org/diary.org")
                "* TODO %?                  :SchedActivity: \n SCHEDULED: %(call-interactively 'zy/org-schedule-from-previous-or-new)")
               ("r" "respond" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
-               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%U\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
               ("n" "note" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
-               "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+               "* %? :NOTE:\n%a\n" :clock-in t :clock-resume t)
               ("j" "Journal" entry (file+datetree "C:/Users/zhiyliu/Dropbox/org/diary.org")
-               "* %?\n%U\n" :clock-in t :clock-resume t)
-              ("w" "org-protocol" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
-               "* TODO Review %c\n%U\n" :immediate-finish t)
+               "* %?\n" :clock-in t :clock-resume t)
+              ("o" "org-protocol" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+               "* TODO Review %c\n" :immediate-finish t)
               ("m" "Meeting" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
               ("p" "Phone call" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
               ("h" "Habit" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
-               "* NEXT %?\n%U\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+               "* NEXT %?\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
-;; ;; Remove empty LOGBOOK drawers on clock out
-;; (defun bh/remove-empty-drawer-on-clock-out ()
-;;   (interactive)
-;;   (save-excursion
-;;     (beginning-of-line)
-;;     (org-remove-empty-drawer-at "LOGBOOK" (point))))
+;; Remove empty LOGBOOK drawers on clock out
+(defun bh/remove-empty-drawer-on-clock-out ()
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (org-remove-empty-drawer-at "LOGBOOK" (point))))
 
 ;; (add-hook 'org-clock-out-hook 'bh/remove-empty-drawer-on-clock-out 'append)
 
-                                        ; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
 (setq org-refile-targets (quote ((nil :maxlevel . 9)
                                  (org-agenda-files :maxlevel . 9))))
 
-                                        ; Use full outline paths for refile targets - we file directly with IDO
+;; Use full outline paths for refile targets - we file directly with IDO
 (setq org-refile-use-outline-path t)
 
-                                        ; Targets complete directly with IDO
+;; Targets complete directly with IDO
 (setq org-outline-path-complete-in-steps nil)
 
-                                        ; Allow refile to create parent tasks with confirmation
+;; Allow refile to create parent tasks with confirmation
 (setq org-refile-allow-creating-parent-nodes (quote confirm))
 
-                                        ; Use IDO for both buffer and file completion and ido-everywhere to t
+;; Use IDO for both buffer and file completion and ido-everywhere to t
 (setq org-completion-use-ido t)
 (setq ido-everywhere t)
 (setq ido-max-directory-size 100000)
 (ido-mode (quote both))
-                                        ; Use the current window when visiting files and buffers with ido
+;; Use the current window when visiting files and buffers with ido
 (setq ido-default-file-method 'selected-window)
 (setq ido-default-buffer-method 'selected-window)
-                                        ; Use the current window for indirect buffer display
+;; Use the current window for indirect buffer display
 (setq org-indirect-buffer-display 'current-window)
 
-;;;; Refile settings
-                                        ; Exclude DONE state tasks from refile targets
+;; Refile settings
+;; Exclude DONE state tasks from refile targets
 (defun bh/verify-refile-target ()
   "Exclude todo keywords with a done state from refile targets"
   (not (member (nth 2 (org-heading-components)) org-done-keywords)))
@@ -227,11 +235,6 @@
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
                        (org-tags-match-list-sublevels nil)))
-                (tags-todo "-CANCELLED/!"
-                           ((org-agenda-overriding-header "Stuck Projects")
-                            (org-agenda-skip-function 'bh/skip-non-stuck-projects)
-                            (org-agenda-sorting-strategy
-                             '(category-keep))))
                 (tags-todo "-HOLD-CANCELLED/!"
                            ((org-agenda-overriding-header "Projects")
                             (org-agenda-skip-function 'bh/skip-non-projects)
@@ -251,6 +254,32 @@
                             (org-agenda-sorting-strategy
                              '(todo-state-down effort-up category-keep))))
                 (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
+                           ((org-agenda-overriding-header (concat "Standalone Tasks"
+                                                                  (if bh/hide-scheduled-and-waiting-next-tasks
+                                                                      ""
+                                                                    " (including WAITING and SCHEDULED tasks)")))
+                            (org-agenda-skip-function 'bh/skip-project-tasks)
+                            (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
+                            (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
+                            (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
+                            (org-agenda-sorting-strategy
+                             '(todo-state-down category-down))))
+                (tags-todo "-CANCELLED+WAITING/!"
+                           ((org-agenda-overriding-header (concat "Waiting Tasks"
+                                                                  (if bh/hide-scheduled-and-waiting-next-tasks
+                                                                      ""
+                                                                    " (including WAITING and SCHEDULED tasks)")))
+                            (org-agenda-skip-function 'bh/skip-non-tasks)
+                            (org-tags-match-list-sublevels nil)
+                            (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
+                            (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
+                (tags-todo "-CANCELLED/!"
+                           ((org-agenda-overriding-header "Stuck Projects")
+                            (org-agenda-skip-function 'bh/skip-non-stuck-projects)
+                            (org-agenda-sorting-strategy
+                             '(category-keep))))
+
+                (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
                            ((org-agenda-overriding-header (concat "Project Subtasks"
                                                                   (if bh/hide-scheduled-and-waiting-next-tasks
                                                                       ""
@@ -261,19 +290,8 @@
                             (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
                             (org-agenda-sorting-strategy
                              '(category-keep))))
-                (tags-todo "-REFILE-CANCELLED-WAITING-HOLD/!"
-                           ((org-agenda-overriding-header (concat "Standalone Tasks"
-                                                                  (if bh/hide-scheduled-and-waiting-next-tasks
-                                                                      ""
-                                                                    " (including WAITING and SCHEDULED tasks)")))
-                            (org-agenda-skip-function 'bh/skip-project-tasks)
-                            (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
-                            (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)
-                            (org-agenda-todo-ignore-with-date bh/hide-scheduled-and-waiting-next-tasks)
-                            (org-agenda-sorting-strategy
-                             '(todo-state-down category-keep priority-down))))
-                (tags-todo "-CANCELLED+WAITING|HOLD/!"
-                           ((org-agenda-overriding-header (concat "Waiting and Postponed Tasks"
+                (tags-todo "-CANCELLED+HOLD/!"
+                           ((org-agenda-overriding-header (concat "Postponed Tasks"
                                                                   (if bh/hide-scheduled-and-waiting-next-tasks
                                                                       ""
                                                                     " (including WAITING and SCHEDULED tasks)")))
@@ -467,7 +485,7 @@ A prefix arg forces clock in of the default task."
                                     ("STYLE_ALL" . "habit"))))
 
 ;; Agenda log mode items to display (closed and state changes by default)
-(setq org-agenda-log-mode-items (quote (closed state)))
+(setq org-agenda-log-mode-items (quote (clock)))
 
                                         ; Tags with fast selection keys
 (setq org-tag-alist (quote ((:startgroup)
@@ -1710,7 +1728,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
 
 (setq require-final-newline t)
 
-(defvar bh/insert-inactive-timestamp t)
+(defvar bh/insert-inactive-timestamp nil)
 
 (defun bh/toggle-insert-inactive-timestamp ()
   (interactive)
@@ -1728,7 +1746,7 @@ Late deadlines first, then scheduled, then non-late deadlines"
       (org-cycle)
       (bh/insert-inactive-timestamp))))
 
-(add-hook 'org-insert-heading-hook 'bh/insert-heading-inactive-timestamp 'append)
+;; (add-hook 'org-insert-heading-hook 'bh/insert-heading-inactive-timestamp 'append)
 
 (setq org-export-with-timestamps nil)
 
