@@ -20,7 +20,7 @@
 ;;
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
-  (setq org-agenda-files (quote ("C:/Users/zhiyliu/Dropbox/org/" "~/org"))))
+  (setq org-agenda-files (quote ("C:/Users/zhiyliu/Dropbox/org/" "~/org" "C:/Users/zhiyliu/Dropbox/Apps/ZenNote"))))
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
@@ -171,8 +171,48 @@
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
               ("p" "Phone call" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-              ("h" "Habit" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("h" "Habit" entry (file+headline "C:/Users/zhiyliu/Dropbox/org/pp.org" "Habits")
                "* NEXT %?\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+
+(defun my/org-refile-to-journal ()
+  "Refile an entry to journal file's date-tree"
+  (interactive)
+  (require 'org-datetree)
+  (let ((journal "C:/Users/zhiyliu/Dropbox/org/diary.org")
+        post-date)
+    (setq post-date (or (org-entry-get (point) "TIMESTAMP_IA")
+                        (org-entry-get (point) "TIMESTAMP")
+                        (org-read-date nil nil "")))
+    (setq post-date (nthcdr 3 (parse-time-string post-date)))
+    (setq post-date (list (cadr post-date) 
+                          (car post-date) 
+                          (caddr post-date)))
+    (org-cut-subtree)
+    (with-current-buffer (or (find-buffer-visiting journal)
+                             (find-file-noselect file))
+      (save-excursion
+        (org-datetree-file-entry-under (current-kill 0) post-date)
+        (bookmark-set "org-refile-last-stored")))
+    (message "Refiled to %s" journal)))
+
+(defun my/org-agenda-refile-to-journal ()
+  "Refile the item at point to journal."
+  (interactive)
+  (let* ((marker (or (org-get-at-bol 'org-hd-marker)
+                     (org-agenda-error)))
+         (buffer (marker-buffer marker))
+         (pos (marker-position marker)))
+    (with-current-buffer buffer
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char marker)
+          ;; (org-remove-subtree-entries-from-agenda)
+          (my/org-refile-to-journal)))))
+  (org-agenda-redo))
+
+
+
 
 ;; Remove empty LOGBOOK drawers on clock out
 (defun bh/remove-empty-drawer-on-clock-out ()
@@ -299,10 +339,11 @@
                             (org-tags-match-list-sublevels nil)
                             (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
                             (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
-                (tags "-REFILE/"
-                      ((org-agenda-overriding-header "Tasks to Archive")
-                       ;; (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
-                       (org-tags-match-list-sublevels nil))))
+                ;; (tags "-REFILE/"
+                ;;       ((org-agenda-overriding-header "Tasks to Archive")
+                ;;        ;; (org-agenda-skip-function 'bh/skip-non-archivable-tasks)
+                ;;        (org-tags-match-list-sublevels nil)))
+                )
                nil))))
 
 (defun bh/org-auto-exclude-function (tag)
@@ -1273,7 +1314,9 @@ so change the default 'F' binding in the agenda to allow both"
     (beginning-of-buffer)))
 
 (add-hook 'org-agenda-mode-hook
-          '(lambda () (org-defkey org-agenda-mode-map "F" 'bh/restrict-to-file-or-follow))
+          '(lambda ()
+             (org-defkey org-agenda-mode-map "F" 'bh/restrict-to-file-or-follow)
+             (org-defkey org-agenda-mode-map (kbd "C-c C-M-w") 'my/org-agenda-refile-to-journal))
           'append)
 
 (defun bh/narrow-to-org-subtree ()
@@ -1901,7 +1944,8 @@ Late deadlines first, then scheduled, then non-late deadlines"
              (org-defkey org-mode-map "\C-c[" 'undefined)
              (org-defkey org-mode-map "\C-c]" 'undefined)
              (org-defkey org-mode-map "\C-c;" 'undefined)
-             (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined))
+             (org-defkey org-mode-map "\C-c\C-x\C-q" 'undefined)
+             (org-defkey org-mode-map (kbd "C-c C-M-w") 'my/org-refile-to-journal))
           'append)
 
 (add-hook 'org-mode-hook
