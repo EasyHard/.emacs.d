@@ -261,6 +261,9 @@
 ;; Compact the block agenda view
 ;;(setq org-agenda-compact-blocks t)
 
+(org-agenda-hide-tags-regexp
+           (concat org-agenda-hide-tags-regexp "\\|DEDICATION")
+
 ;; Custom agenda command definitions
 (setq org-agenda-custom-commands
       (quote (("N" "Notes" tags "NOTE"
