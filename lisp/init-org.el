@@ -259,7 +259,7 @@
 (setq org-agenda-dim-blocked-tasks nil)
 
 ;; Compact the block agenda view
-(setq org-agenda-compact-blocks t)
+;;(setq org-agenda-compact-blocks t)
 
 ;; Custom agenda command definitions
 (setq org-agenda-custom-commands
@@ -270,7 +270,28 @@
                ((org-agenda-overriding-header "Habits")
                 (org-agenda-sorting-strategy
                  '(todo-state-down effort-up category-keep))))
-              (" " "Agenda"
+              (" " "Today's agenda"
+               ((agenda "" nil)
+                (tags "REFILE"
+                      ((org-agenda-overriding-header "Tasks to Refile")
+                       (org-tags-match-list-sublevels nil)))
+                ;; (tags-todo "Postponed"
+                ;;            ((org-agenda-overriding-header "Postponed Tasks")
+                ;;             (org-agenda-skip-function 'bh/skip-non-tasks)
+                ;;             (org-tags-match-list-sublevels 'indented)
+                ;;             (org-agenda-todo-ignore-scheduled 'future)))
+                (tags-todo "Quick"
+                           ((org-agenda-overriding-header (concat "Quick Tasks"
+                                                                  (if bh/hide-scheduled-and-waiting-next-tasks
+                                                                      ""
+                                                                    " (including WAITING and SCHEDULED tasks)")))
+                            (org-agenda-skip-function 'bh/skip-non-tasks)
+                            (org-tags-match-list-sublevels nil)
+                            (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
+                            (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
+                )
+               nil)
+              ("o" "Agenda"
                ((agenda "" nil)
                 (tags "REFILE"
                       ((org-agenda-overriding-header "Tasks to Refile")
@@ -336,7 +357,7 @@
                                                                       ""
                                                                     " (including WAITING and SCHEDULED tasks)")))
                             (org-agenda-skip-function 'bh/skip-non-tasks)
-                            (org-tags-match-list-sublevels nil)
+                            (org-tags-match-list-sublevels 'indented)
                             (org-agenda-todo-ignore-scheduled bh/hide-scheduled-and-waiting-next-tasks)
                             (org-agenda-todo-ignore-deadlines bh/hide-scheduled-and-waiting-next-tasks)))
                 ;; (tags "-REFILE/"
