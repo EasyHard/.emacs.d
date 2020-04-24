@@ -14,13 +14,16 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
+(setq zennote-directory (concat dropbox-directory "Apps/ZenNote/"))
+(setq sharedorg-directory (concat dropbox-directory "org/"))
+
 ;; The following setting is different from the document so that you
 ;; can override the document org-agenda-files by setting your
 ;; org-agenda-files in the variable org-user-agenda-files
 ;;
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
-  (setq org-agenda-files (quote ("C:/Users/zhiyliu/Dropbox/org/" "~/org" "C:/Users/zhiyliu/Dropbox/Apps/ZenNote"))))
+  (setq org-agenda-files (quote (sharedorg-directory "~/org" zennote-directory))))
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)
@@ -122,8 +125,9 @@
               ("NEXT" ("WAITING") ("CANCELLED") ("HOLD"))
               ("DONE" ("WAITING") ("CANCELLED") ("HOLD")))))
 
-(setq org-directory "C:/Users/zhiyliu/Dropbox/org/")
-(setq org-default-notes-file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+(setq org-directory sharedorg-directory)
+(defun org-subfilepath (filename) (concat (file-name-as-directory org-directory) filename))
+(setq org-default-notes-file (org-subfilepath "refile.org"))
 
 ;; I use C-c c to start capture mode
 (global-set-key (kbd "C-c c") 'org-capture)
@@ -154,38 +158,38 @@
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
-      (quote (("t" "todo" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+      (quote (("t" "todo" entry (file (org-subfilepath "refile.org"))
                "* TODO %?\n%a\n" :clock-in t :clock-resume t)
               ("w" "Templates for work.org captures")
-              ("wc" "CRI" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "CRI")
+              ("wc" "CRI" entry (file+headline (concat org-localfile-dir "work.org") "CRI")
                "* TODO %?%c\n\n" :clock-in t :clock-resume t)
-              ("wm" "Mics" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "Misc")
+              ("wm" "Mics" entry (file+headline (concat org-localfile-dir "work.org") "Misc")
                "* TODO %?\n%a\n" :clock-in t :clock-resume t)
-              ("w2" "Sev2" entry (file+headline "c:/Users/zhiyliu/AppData/Roaming/org/work.org" "Sev2 Livesite")
+              ("w2" "Sev2" entry (file+headline (concat org-localfile-dir "work.org") "Sev2 Livesite")
                "* TODO %?%c\n\n" :clock-in t :clock-resume t)
               ("s" "SchedActivity" entry
-               (file "C:/Users/zhiyliu/Dropbox/org/diary.org")
+               (file (org- subfilepath "diary.org"))
                "* TODO %?                  :SchedActivity: \n SCHEDULED: %(call-interactively 'zy/org-schedule-from-previous-or-new)")
-              ("r" "respond" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("r" "respond" entry (file (org-subfilepath "refile.org"))
                "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-              ("n" "note" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("n" "note" entry (file (org-subfilepath "refile.org"))
                "* %? :NOTE:\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree "C:/Users/zhiyliu/Dropbox/org/diary.org")
+              ("j" "Journal" entry (file+datetree (org- subfilepath "diary.org"))
                "* %?\n" :clock-in t :clock-resume t)
-              ("o" "org-protocol" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("o" "org-protocol" entry (file (org-subfilepath "refile.org"))
                "* TODO Review %c\n" :immediate-finish t)
-              ("m" "Meeting" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("m" "Meeting" entry (file (org-subfilepath "refile.org"))
                "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-              ("p" "Phone call" entry (file "C:/Users/zhiyliu/Dropbox/org/refile.org")
+              ("p" "Phone call" entry (file (org-subfilepath "refile.org"))
                "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-              ("h" "Habit" entry (file+headline "C:/Users/zhiyliu/Dropbox/org/pp.org" "Habits")
+              ("h" "Habit" entry (file+headline (org-subfilepath "pp.org") "Habits")
                "* NEXT %?\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
 
 (defun my/org-refile-to-journal ()
   "Refile an entry to journal file's date-tree"
   (interactive)
   (require 'org-datetree)
-  (let ((journal "C:/Users/zhiyliu/Dropbox/org/diary.org")
+  (let ((journal (org- subfilepath "diary.org"))
         post-date)
     (setq post-date (or (org-entry-get (point) "TIMESTAMP_IA")
                         (org-entry-get (point) "TIMESTAMP")
