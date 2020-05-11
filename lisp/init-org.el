@@ -23,7 +23,7 @@
 ;;
 (if (boundp 'org-user-agenda-files)
     (setq org-agenda-files org-user-agenda-files)
-  (setq org-agenda-files (quote (sharedorg-directory "~/org" zennote-directory))))
+  (setq org-agenda-files (list sharedorg-directory "~/org" zennote-directory)))
 
 ;; Custom Key Bindings
 (global-set-key (kbd "<f12>") 'org-agenda)

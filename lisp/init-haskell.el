@@ -3,20 +3,12 @@
 
 ;; Use intero for completion and flycheck
 
-(when (maybe-require-package 'intero)
-  (after-load 'haskell-mode
-    (intero-global-mode)
-    (add-hook 'haskell-mode-hook 'subword-mode)
-    (add-hook 'haskell-mode-hook 'eldoc-mode))
-  (after-load 'haskell-cabal
-    (add-hook 'haskell-cabal-mode 'subword-mode)
-    (define-key haskell-cabal-mode-map (kbd "C-c C-l") 'intero-restart))
-  (after-load 'intero
-    ;; Don't clobber sanityinc/counsel-search-project binding
-    (define-key intero-mode-map (kbd "M-?") nil)
-    (after-load 'flycheck
-      (flycheck-add-next-checker 'intero
-                                 '(warning . haskell-hlint)))))
+(after-load 'haskell-mode
+  ;;(intero-global-mode)
+  (add-hook 'haskell-mode-hook 'subword-mode)
+  (add-hook 'haskell-mode-hook 'eldoc-mode))
+(after-load 'haskell-cabal
+  (add-hook 'haskell-cabal-mode 'subword-mode))
 
 
 (add-auto-mode 'haskell-mode "\\.ghci\\'")
