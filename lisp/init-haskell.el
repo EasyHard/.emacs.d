@@ -6,12 +6,28 @@
 (after-load 'haskell-mode
   ;;(intero-global-mode)
   (add-hook 'haskell-mode-hook 'subword-mode)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-hook 'haskell-mode-hook 'eldoc-mode))
 (after-load 'haskell-cabal
   (add-hook 'haskell-cabal-mode 'subword-mode))
 
 
 (add-auto-mode 'haskell-mode "\\.ghci\\'")
+(custom-set-variables '(haskell-tags-on-save t))
+(custom-set-variables '(haskell-process-type 'stack-ghci))
+
+(setq haskell-process-args-ghci
+      '("-ferror-spans" "-fshow-loaded-modules"))
+
+(setq haskell-process-args-cabal-repl
+      '("--ghc-options=-ferror-spans -fshow-loaded-modules"))
+
+(setq haskell-process-args-stack-ghci
+      '("--ghci-options=-ferror-spans -fshow-loaded-modules"
+        "--no-build" "--no-load"))
+
+(setq haskell-process-args-cabal-new-repl
+      '("--ghc-options=-ferror-spans -fshow-loaded-modules"))
 
 
 ;; Indentation
