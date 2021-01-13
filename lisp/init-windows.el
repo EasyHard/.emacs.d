@@ -102,5 +102,17 @@ Call a second time to restore the original window configuration."
 (unless (memq window-system '(nt w32))
   (windmove-default-keybindings 'control))
 
+(setq profile-folder (concat "C:/Users/" (user-login-name) "/"))
+
+(setq dropbox-directory (expand-file-name "Dropbox" profile-folder))
+(setq org-localfile-dir (expand-file-name "AppData/Roaming/org/" profile-folder))
+
+(set-terminal-coding-system 'utf-8)
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+(setq locale-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
 
 (provide 'init-windows)

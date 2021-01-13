@@ -69,6 +69,7 @@
   (org-set-tags "QUICK"))
 
 (defun zy/org-mark-postponed ()
+  (interactive)
   (org-set-tags "POSTPONED"))
 
 (defun bh/hide-other ()
@@ -158,32 +159,37 @@
 
 ;; Capture templates for: TODO tasks, Notes, appointments, phone calls, meetings, and org-protocol
 (setq org-capture-templates
-      (quote (("t" "todo" entry (file (org-subfilepath "refile.org"))
-               "* TODO %?\n%a\n" :clock-in t :clock-resume t)
-              ("w" "Templates for work.org captures")
-              ("wc" "CRI" entry (file+headline (concat org-localfile-dir "work.org") "CRI")
-               "* TODO %?%c\n\n" :clock-in t :clock-resume t)
-              ("wm" "Mics" entry (file+headline (concat org-localfile-dir "work.org") "Misc")
-               "* TODO %?\n%a\n" :clock-in t :clock-resume t)
-              ("w2" "Sev2" entry (file+headline (concat org-localfile-dir "work.org") "Sev2 Livesite")
-               "* TODO %?%c\n\n" :clock-in t :clock-resume t)
-              ("s" "SchedActivity" entry
-               (file (org- subfilepath "diary.org"))
-               "* TODO %?                  :SchedActivity: \n SCHEDULED: %(call-interactively 'zy/org-schedule-from-previous-or-new)")
-              ("r" "respond" entry (file (org-subfilepath "refile.org"))
-               "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
-              ("n" "note" entry (file (org-subfilepath "refile.org"))
-               "* %? :NOTE:\n%a\n" :clock-in t :clock-resume t)
-              ("j" "Journal" entry (file+datetree (org- subfilepath "diary.org"))
-               "* %?\n" :clock-in t :clock-resume t)
-              ("o" "org-protocol" entry (file (org-subfilepath "refile.org"))
-               "* TODO Review %c\n" :immediate-finish t)
-              ("m" "Meeting" entry (file (org-subfilepath "refile.org"))
-               "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
-              ("p" "Phone call" entry (file (org-subfilepath "refile.org"))
-               "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
-              ("h" "Habit" entry (file+headline (org-subfilepath "pp.org") "Habits")
-               "* NEXT %?\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n"))))
+      `(("t" "todo" entry (file ,(org-subfilepath "refile.org"))
+         "* TODO %?\n%a\n" :clock-in t :clock-resume t)
+        ("s" "SchedActivity" entry
+         (file ,(org-subfilepath "diary.org"))
+         "* TODO %?                  :SchedActivity: \n SCHEDULED: %(call-interactively 'zy/org-schedule-from-previous-or-new)")
+        ("r" "respond" entry (file ,(org-subfilepath "refile.org"))
+         "* NEXT Respond to %:from on %:subject\nSCHEDULED: %t\n%a\n" :clock-in t :clock-resume t :immediate-finish t)
+        ("n" "note" entry (file ,(org-subfilepath "refile.org"))
+         "* %? :NOTE:\n%a\n" :clock-in t :clock-resume t)
+        ("j" "Journal" entry (file+datetree ,(org-subfilepath "diary.org"))
+         "* %?\n" :clock-in t :clock-resume t)
+        ("o" "org-protocol" entry (file ,(org-subfilepath "refile.org"))
+         "* TODO Review %c\n" :immediate-finish t)
+        ("m" "Meeting" entry (file ,(org-subfilepath "refile.org"))
+         "* MEETING with %? :MEETING:\n%U" :clock-in t :clock-resume t)
+        ("p" "Phone call" entry (file ,(org-subfilepath "refile.org"))
+         "* PHONE %? :PHONE:\n%U" :clock-in t :clock-resume t)
+        ("h" "Habit" entry (file+headline ,(org-subfilepath "pp.org") "Habits")
+         "* NEXT %?\n%a\nSCHEDULED: %(format-time-string \"%<<%Y-%m-%d %a .+1d/3d>>\")\n:PROPERTIES:\n:STYLE: habit\n:REPEAT_TO_STATE: NEXT\n:END:\n")))
+
+(setq org-capture-templates-work
+      `(("w" "Templates for work.org captures")
+        ("wc" "CRI" entry (file+headline ,(concat org-localfile-dir "work.org") "CRI")
+         "* TODO %?%c\n\n" :clock-in t :clock-resume t)
+        ("wm" "Mics" entry (file+headline ,(concat org-localfile-dir "work.org") "Misc")
+         "* TODO %?\n%a\n" :clock-in t :clock-resume t)
+        ("w2" "Sev2" entry (file+headline ,(concat org-localfile-dir "work.org") "Sev2 Livesite")
+         "* TODO %?%c\n\n" :clock-in t :clock-resume t)))
+
+(if is-workplace-compute
+    (setq org-capture-templates (append org-capture-templates org-capture-templates-work)))
 
 (defun my/org-refile-to-journal ()
   "Refile an entry to journal file's date-tree"
@@ -218,7 +224,7 @@
         (save-restriction
           (widen)
           (goto-char marker)
-          ;; (org-remove-subtree-entries-from-agenda)
+          ;; (Org-remove-subtree-entries-from-agenda)
           (my/org-refile-to-journal)))))
   (org-agenda-redo))
 
