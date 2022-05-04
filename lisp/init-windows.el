@@ -104,7 +104,7 @@ Call a second time to restore the original window configuration."
 
 (setq profile-folder (concat "C:/Users/" (user-login-name) "/"))
 
-(setq dropbox-directory (expand-file-name "Dropbox" profile-folder))
+(setq shared-directory (expand-file-name "OneDrive - Microsoft" profile-folder))
 (setq org-localfile-dir (expand-file-name "AppData/Roaming/org/" profile-folder))
 
 (set-terminal-coding-system 'utf-8)

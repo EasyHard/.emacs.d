@@ -1,4 +1,4 @@
-(setq is-workplace-compute 't)
+(setq is-workplace-compute 'nil)
 
 (provide 'init-local-windows)
 ;;; 

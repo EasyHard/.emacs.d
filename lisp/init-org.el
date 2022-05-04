@@ -14,8 +14,8 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq zennote-directory (expand-file-name "Apps/ZenNote/" dropbox-directory))
-(setq sharedorg-directory (expand-file-name "org/" dropbox-directory))
+(setq zennote-directory (expand-file-name "Apps/ZenNote/" shared-directory))
+(setq sharedorg-directory (expand-file-name "org/" shared-directory))
 
 ;; The following setting is different from the document so that you
 ;; can override the document org-agenda-files by setting your
@@ -181,15 +181,14 @@
 
 (setq org-capture-templates-work
       `(("w" "Templates for work.org captures")
-        ("wc" "CRI" entry (file+headline ,(concat org-localfile-dir "work.org") "CRI")
+        ("wc" "CRI" entry (file+headline ,(concat sharedorg-directory "work.org") "CRI")
          "* TODO %?%c\n\n" :clock-in t :clock-resume t)
-        ("wm" "Mics" entry (file+headline ,(concat org-localfile-dir "work.org") "Misc")
+        ("wm" "Mics" entry (file+headline ,(concat sharedorg-directory "work.org") "Misc")
          "* TODO %?\n%a\n" :clock-in t :clock-resume t)
-        ("w2" "Sev2" entry (file+headline ,(concat org-localfile-dir "work.org") "Sev2 Livesite")
+        ("w2" "Sev2" entry (file+headline ,(concat sharedorg-directory "work.org") "Sev2 Livesite")
          "* TODO %?%c\n\n" :clock-in t :clock-resume t)))
 
-(if is-workplace-compute
-    (setq org-capture-templates (append org-capture-templates org-capture-templates-work)))
+(setq org-capture-templates (append org-capture-templates org-capture-templates-work))
 
 (defun my/org-refile-to-journal ()
   "Refile an entry to journal file's date-tree"
@@ -255,7 +254,7 @@
 
 ;; Use IDO for both buffer and file completion and ido-everywhere to t
 (setq org-completion-use-ido t)
-(setq ido-everywhere t)
+;(setq ido-everywhere t)
 (setq ido-max-directory-size 100000)
 (ido-mode (quote both))
 ;; Use the current window when visiting files and buffers with ido

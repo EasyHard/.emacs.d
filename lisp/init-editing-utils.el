@@ -241,9 +241,9 @@
 ;; Cut/copy the current line if no region is active
 ;;----------------------------------------------------------------------------
 (require-package 'whole-line-or-region)
-(add-hook 'after-init-hook 'whole-line-or-region-mode)
-(after-load 'whole-line-or-region
-  (diminish 'whole-line-or-region-local-mode))
+;; (add-hook 'after-init-hook 'whole-line-or-region-mode)
+;; (after-load 'whole-line-or-region
+;;   (diminish 'whole-line-or-region-local-mode))
 
 (defun suspend-mode-during-cua-rect-selection (mode-name)
   "Add an advice to suspend `MODE-NAME' while selecting a CUA rectangle."
@@ -261,7 +261,7 @@
            (when ,flagvar
              (,mode-name 1)))))))
 
-(suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
+;; (suspend-mode-during-cua-rect-selection 'whole-line-or-region-mode)
 
 
 
