@@ -50,3 +50,7 @@ site-lisp/package/
 /rake.cache
 /plantuml.jar
 /magithub
+*.el
+/abbrev_defs
+.dir-locals.el
+dir-locals.el

@@ -104,8 +104,8 @@ Call a second time to restore the original window configuration."
 
 (setq profile-folder (concat "C:/Users/" (user-login-name) "/"))
 
-(setq shared-directory (expand-file-name "OneDrive - Microsoft" profile-folder))
-(setq org-localfile-dir (expand-file-name "AppData/Roaming/org/" profile-folder))
+(setq shared-directory "d:/SynologyDrive")
+;; (setq org-localfile-dir (expand-file-name "AppData/Roaming/org/" profile-folder))
 
 (set-terminal-coding-system 'utf-8)
 (set-language-environment 'utf-8)

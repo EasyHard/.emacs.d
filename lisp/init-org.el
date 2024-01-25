@@ -14,8 +14,9 @@
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key "\C-cb" 'org-iswitchb)
 
-(setq zennote-directory (expand-file-name "Apps/ZenNote/" shared-directory))
+
 (setq sharedorg-directory (expand-file-name "org/" shared-directory))
+(setq zennote-directory (expand-file-name "telegram-bot/" sharedorg-directory))
 
 ;; The following setting is different from the document so that you
 ;; can override the document org-agenda-files by setting your
